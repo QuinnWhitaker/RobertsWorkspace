@@ -3,28 +3,9 @@
 All rights reserved. Copyright Robert Roy 2016.
 -->
 <?php
-include_once "util.php";
-util::printheader("My Degree is in Business");
-//todo Fix "I have used" section to resize better
+require_once "util.php";
+util::printheader("<div style='display:inline-block'>Web Development</div> <div style='display:inline-block'>Done Right</div>");
 ?>
-<div class="contentdiv">
-    <div class="centered">
-        <p>I also know how to program.</p>
-    </div>
-    <br>
-    <p>Ask any hiring manager in this industry what they need,
-        and they will tell you,</p>
-    <br>
-    <div class="centered">"I need somebody who can communicate."</div>
-    <br>
-    <p>Does that sound like you or someone you know? I have:</p>
-    <ul>
-        <li>Communicated directly with clients for years</li>
-        <li>Supervised employees</li>
-        <li>Interviewed potential employees</li>
-    </ul>
-</div>
-<br>
 <div class="contentdiv">
     <p>I have used:</p>
     <ul class='shrink-list'>
@@ -54,9 +35,8 @@ util::printheader("My Degree is in Business");
 </div>
 <br>
 <div class="contentdiv">
-    <p><a href=<?= util::$GITHUB ?>>Click here for code</a></p>
+    <p><a href=<?= util::$GITHUB ?>>My code is available on GitHub</a></p>
 </div>
-
 <?php
 util::printfooter();
 ?>

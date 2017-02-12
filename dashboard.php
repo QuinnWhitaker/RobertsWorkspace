@@ -3,7 +3,7 @@
 All rights reserved. Copyright Robert Roy 2016.
 -->
 <?php
-include_once "util.php";
+require_once "util.php";
 $util = new util();
 $conn = $util->getConn();
 $IP = $util->getUserIP();
@@ -11,40 +11,35 @@ $page = $util->getPage();
 util::printheader("Robert's Analytics");
 ?>
 <div class="contentdiv">
-    <p>This page is still in development.</p>
-</div>
-<br>
-<div class="contentdiv">
     <?php
     try {
         //Find out how many times IP has viewed current page
-        $statement = $conn->prepare('SELECT COUNT(*) FROM PageViews WHERE PAGE = ? and IP = ?');
-        $statement->execute([$page, $IP]);
-        $userviewsonthispage = $statement->fetch(PDO::FETCH_NUM)[0];
-
-        //Find out how many times page has been viewed
-        $statement = $conn->prepare('SELECT COUNT(*) FROM PageViews WHERE PAGE = ?');
-        $statement->execute([$page]);
-        $allviewsonthispage = $statement->fetch(PDO::FETCH_NUM)[0];
-
-        //Find out how many times all pages have been viewed
-        $statement = $conn->prepare('SELECT COUNT(*) FROM PageViews WHERE IP = ?');
-        $statement->execute([$IP]);
-        $userviewsonallpages = $statement->fetch(PDO::FETCH_NUM)[0];
-
-        //Find out how many times page has been viewed
-        $statement = $conn->prepare('SELECT * FROM PageViews');
+        $statement = $conn->prepare('SELECT DISTINCT PAGE FROM PageViews');
         $statement->execute();
-        $allviewsonallpages = $statement->rowCount();
-        //TODO: Display this information somehow
         ?>
-        <p>
-            Your views on this page: <?= $userviewsonthispage ?>
-            <br>Total views on this page: <?= $allviewsonthispage ?>
-            <br>
-            <br>Your views on all pages: <?= $userviewsonallpages ?>
-            <br>Total views on all pages: <?= $allviewsonallpages ?>
-        </p> 
+        You have viewed the following pages:
+        <ul>
+            <?php
+            $totalViews = 0;
+            // show user views of ALL pages by getting all pages then showing all views
+            foreach ($statement as $row) {
+                $currentPage = $row['PAGE'];
+                // get user's views on current page
+                $userPageViewsStatement = $conn->prepare('SELECT COUNT(*) FROM PageViews WHERE PAGE = ? AND IP = ?');
+                $userPageViewsStatement->execute([$currentPage, $IP]);
+                $userPageViews = $userPageViewsStatement->fetch(PDO::FETCH_NUM)[0];
+                // get all user's views on current page
+                $totalPageViewsStatement = $conn->prepare('SELECT COUNT(*) FROM PageViews WHERE PAGE = ?');
+                $totalPageViewsStatement->execute([$currentPage]);
+                $totalPageViews = $totalPageViewsStatement->fetch(PDO::FETCH_NUM)[0];
+                
+                $userTotalViews += $userPageViews;
+                $allUsersTotalViews += $totalPageViews;
+                echo "<li>" . $currentPage . " (" . $userPageViews . "/" . $totalPageViews . " views)</li>";
+            }
+            ?>
+        </ul>
+        <p>You have a total of <?= $userTotalViews ?>/<?= $allUsersTotalViews ?> page views.</p>
         <?php
     } catch (Exception $ex) {
         Echo "An error occurred. It has been reported.";
